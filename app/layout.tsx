@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Arima } from "next/font/google";
+import { cn } from "./lib/utils";
 import "./globals.css";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import { ClerkProvider, ClerkLoaded, ClerkLoading } from "@clerk/nextjs";
+import PreLoader from "./components/PreLoader";
+import { neobrutalism } from "@clerk/themes";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const arima = Arima({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -23,12 +24,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+    <ClerkProvider
+      appearance={{
+        baseTheme: neobrutalism,
+      }}
+    >
+      <html className="scroll-smooth" lang="en">
+        <body
+          className={cn(
+            "flex min-h-screen flex-col bg-background text-foreground antialiased",
+            arima.className
+          )}
+        >
+          <ClerkLoading>
+            <PreLoader />
+          </ClerkLoading>
+          <ClerkLoaded>
+            <Header />
+            <main className="relative mt-20 flex h-full flex-grow flex-col items-center">
+              {children}
+            </main>
+            <Footer />
+          </ClerkLoaded>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
